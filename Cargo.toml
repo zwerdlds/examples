@@ -5,6 +5,7 @@ authors = ["The Gtk-rs Project Developers"]
 autobins = false
 
 [dependencies]
+opencv = { version = "^0.29", default-features = false, features = ["opencv-32"] }
 chrono = "0.4"
 futures = "0.3"
 atk = "^0"
@@ -13,7 +14,7 @@ gobject-sys = "^0"
 glib = "^0"
 gio = "^0"
 gdk = "^0"
-gdk-pixbuf = "^0"
+gdk-pixbuf = { version = "^0.8", features = ["v2_32"] }
 gtk = "^0"
 once_cell = "^0"
 pango = "^0"
@@ -53,6 +54,9 @@ name = "cairo_png"
 
 [[bin]]
 name = "cairo_threads"
+
+[[bin]]
+name = "cairo_pixbuf_overload"
 
 [[bin]]
 name = "cairotest"
