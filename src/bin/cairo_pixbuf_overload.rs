@@ -77,6 +77,8 @@ fn main() {
 
             cr.paint();
 
+            cr.set_source_rgb(0.,0.,0.);
+
             Inhibit(false)
         });
 
