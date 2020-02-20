@@ -31,6 +31,19 @@ fn main() {
     )
     .expect("Initialization failed...");
 
+    let i = imread(
+            TEST_FILE_PATH,
+            imgcodecs::IMREAD_COLOR)
+        .expect("OpenCV imread failed.");
+    let mut o = i.clone().unwrap(); 
+    let rows_size = o.rows().unwrap();
+    let cols_size = o.cols().unwrap();
+    let step = o.mat_step().unwrap().to_size_t().unwrap();
+    let size = cols_size * rows_size * 3;
+
+    cvt_color(&i, &mut o, COLOR_BGR2RGB, 0).expect("Convert to RGB");
+
+
     application.connect_activate(move |app| {
         let window = gtk::ApplicationWindow::new(app);
 
@@ -47,22 +60,11 @@ fn main() {
 
         let drawing_area = Box::new(DrawingArea::new)();
         box_area.pack_start(&drawing_area, true, true, 0);
+        let draw_out_image = o.clone().unwrap();
 
-        drawing_area.connect_draw(|_, cr| {
-            let i = imread(
-                    TEST_FILE_PATH,
-                    imgcodecs::IMREAD_COLOR)
-                .expect("OpenCV imread failed.");
-            let mut o = i.clone().unwrap(); 
-            let rows_size = o.rows().unwrap();
-            let cols_size = o.cols().unwrap();
-            let step = o.mat_step().unwrap().to_size_t().unwrap();
-            let size = cols_size * rows_size * 3;
-
-            cvt_color(&i, &mut o, COLOR_BGR2RGB, 0).expect("Convert to RGB");
-
+        drawing_area.connect_draw(move |_, cr| {
             let slice = unsafe {
-                let ptr = o.ptr(0).unwrap() as *const u8 as *mut u8;
+                let ptr = draw_out_image.ptr(0).unwrap() as *const u8 as *mut u8;
                 std::slice::from_raw_parts(ptr, size as usize).clone()
             };
 
