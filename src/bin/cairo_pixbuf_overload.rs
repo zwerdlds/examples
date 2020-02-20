@@ -36,11 +36,6 @@ fn main() {
             imgcodecs::IMREAD_COLOR)
         .expect("OpenCV imread failed.");
     let mut o = i.clone().unwrap(); 
-    let rows_size = o.rows().unwrap();
-    let cols_size = o.cols().unwrap();
-    let step = o.mat_step().unwrap().to_size_t().unwrap();
-    let size = cols_size * rows_size * 3;
-
     cvt_color(&i, &mut o, COLOR_BGR2RGB, 0).expect("Convert to RGB");
 
 
@@ -61,14 +56,19 @@ fn main() {
         let drawing_area = Box::new(DrawingArea::new)();
         box_area.pack_start(&drawing_area, true, true, 0);
         let draw_out_image = o.clone().unwrap();
+        let rows_size = draw_out_image.rows().unwrap();
+        let cols_size = draw_out_image.cols().unwrap();
+        let step = draw_out_image.mat_step().unwrap().to_size_t().unwrap();
+        let size = cols_size * rows_size * 3;
 
         drawing_area.connect_draw(move |_, cr| {
-            let slice = unsafe {
-                let ptr = draw_out_image.ptr(0).unwrap() as *const u8 as *mut u8;
-                std::slice::from_raw_parts(ptr, size as usize).clone()
-            };
+            let slice = /*unsafe {
+//                let ptr = draw_out_image.ptr(0).unwrap() as *const u8 as *mut u8;
+//                std::slice::from_raw_parts(ptr, size as usize).clone()
+//            };*/
+                vec![0; size as usize];
 
-            let bytes = Bytes::from_static(slice);
+            let bytes = Bytes::from(&slice);
 
             let pixbuf = Pixbuf::new_from_bytes(
                 &bytes, Rgb, false, 8,
